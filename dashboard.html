@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - TechMarket Bank</title>
+    <script src="api-service.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            padding-bottom: 80px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 45px;
+            height: 45px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #667eea;
+            font-size: 1.2em;
+        }
+
+        .user-name {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .user-greeting {
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .balance-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .balance-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .balance-amount {
+            font-size: 2em;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .eye-icon {
+            cursor: pointer;
+            font-size: 0.7em;
+            opacity: 0.8;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            padding: 20px 15px;
+            margin-top: -30px;
+        }
+
+        .action-btn {
+            background: white;
+            border-radius: 15px;
+            padding: 20px 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .action-icon {
+            font-size: 1.8em;
+            margin-bottom: 8px;
+        }
+
+        .action-label {
+            font-size: 0.75em;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .content {
+            padding: 0 15px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            font-size: 1.2em;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .see-all {
+            color: #667eea;
+            font-size: 0.9em;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            margin-bottom: 12px;
+        }
+
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .transaction-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .transaction-item:first-child {
+            padding-top: 0;
+        }
+
+        .transaction-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3em;
+        }
+
+        .icon-expense {
+            background: #ffe6e6;
+        }
+
+        .icon-income {
+            background: #e6f9f0;
+        }
+
+        .transaction-details {
+            flex: 1;
+        }
+
+        .transaction-title {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.95em;
+            margin-bottom: 3px;
+        }
+
+        .transaction-date {
+            font-size: 0.8em;
+            color: #7f8c8d;
+        }
+
+        .transaction-amount {
+            font-weight: 700;
+            font-size: 1em;
+        }
+
+        .amount-negative {
+            color: #e74c3c;
+        }
+
+        .amount-positive {
+            color: #2ecc71;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .service-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .service-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .service-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .service-description {
+            font-size: 0.8em;
+            color: #7f8c8d;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            color: #7f8c8d;
+            transition: all 0.3s;
+            padding: 5px 15px;
+            border: none;
+            background: none;
+        }
+
+        .nav-item.active {
+            color: #667eea;
+        }
+
+        .nav-icon {
+            font-size: 1.5em;
+        }
+
+        .nav-label {
+            font-size: 0.7em;
+            font-weight: 500;
+        }
+
+        .highlight-badge {
+            background: #e74c3c;
+            color: white;
+            font-size: 0.65em;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        @media (max-width: 600px) {
+            .quick-actions {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .action-label {
+                font-size: 0.7em;
+            }
+        }
+
+        @media (min-width: 768px) {
+            body {
+                max-width: 600px;
+                margin: 0 auto;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-top">
+            <div class="user-info">
+                <div class="avatar" id="avatar">JS</div>
+                <div>
+                    <div class="user-name">Olá,</div>
+                    <div class="user-greeting" id="user-name">João Silva</div>
+                </div>
+            </div>
+            <button class="btn-logout" onclick="logout()">Sair</button>
+        </div>
+
+        <div class="balance-card">
+            <div class="balance-label">Saldo disponível</div>
+            <div class="balance-amount">
+                <span id="balance">R$ 12.847,50</span>
+                <span class="eye-icon" onclick="toggleBalance()">👁️</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <button class="action-btn" onclick="window.location.href='transferencia.html'">
+            <div class="action-icon">💸</div>
+            <div class="action-label">Transferir</div>
+        </button>
+        <button class="action-btn" onclick="alert('Função Pagar em desenvolvimento')">
+            <div class="action-icon">📱</div>
+            <div class="action-label">Pagar</div>
+        </button>
+        <button class="action-btn" onclick="window.location.href='extrato.html'">
+            <div class="action-icon">�</div>
+            <div class="action-label">Extrato</div>
+        </button>
+        <button class="action-btn" onclick="alert('Função Depositar em desenvolvimento')">
+            <div class="action-icon">💰</div>
+            <div class="action-label">Depositar</div>
+        </button>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <!-- Transactions -->
+        <div class="section fade-in">
+            <div class="section-header">
+                <h2 class="section-title">Últimas transações</h2>
+                <a href="extrato.html" class="see-all">Ver todas</a>
+            </div>
+            <div class="card" id="transactions-list">
+                <!-- Transações serão carregadas aqui -->
+            </div>
+        </div>
+
+        <!-- Services -->
+        <div class="section fade-in">
+            <div class="section-header">
+                <h2 class="section-title">Serviços</h2>
+            </div>
+            <div class="services-grid">
+                <div class="service-card" onclick="alert('Cartão em desenvolvimento')">
+                    <div class="service-icon">💳</div>
+                    <div class="service-name">Meu Cartão</div>
+                    <div class="service-description">Gerencie seu cartão</div>
+                </div>
+                <div class="service-card" onclick="alert('Empréstimos em desenvolvimento')">
+                    <div class="service-icon">🏦</div>
+                    <div class="service-name">Empréstimos</div>
+                    <div class="service-description">Simule empréstimos</div>
+                </div>
+                <div class="service-card" onclick="alert('Investimentos em desenvolvimento')">
+                    <div class="service-icon">📈</div>
+                    <div class="service-name">Investimentos</div>
+                    <div class="service-description">Faça seu dinheiro render</div>
+                </div>
+                <div class="service-card" onclick="alert('Seguros em desenvolvimento')">
+                    <div class="service-icon">🛡️</div>
+                    <div class="service-name">Seguros</div>
+                    <div class="service-description">Proteja o que é importante</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <button class="nav-item active">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-label">Início</div>
+        </button>
+        <button class="nav-item" onclick="window.location.href='extrato.html'">
+            <div class="nav-icon">📊</div>
+            <div class="nav-label">Extrato</div>
+        </button>
+        <button class="nav-item" onclick="alert('Notificações em desenvolvimento')">
+            <div class="nav-icon">🔔</div>
+            <div class="nav-label">Avisos</div>
+        </button>
+        <button class="nav-item" onclick="alert('Perfil em desenvolvimento')">
+            <div class="nav-icon">👤</div>
+            <div class="nav-label">Perfil</div>
+        </button>
+    </div>
+
+    <script>
+        // Dados do usuário logado
+        const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+        
+        // Verifica se está logado
+        if (!usuario.logado || !usuario.id) {
+            alert('Você precisa fazer login primeiro');
+            window.location.href = 'login.html';
+        }
+
+        const CONTA_ID = usuario.id;
+        let saldoAtual = usuario.saldo || 0;
+        let saldoVisivel = true;
+
+        // Atualiza informações do usuário na tela
+        document.getElementById('user-name').textContent = usuario.nome;
+        const iniciais = usuario.nome.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        document.getElementById('avatar').textContent = iniciais;
+
+        // Carrega o saldo real do backend
+        async function carregarSaldo() {
+            try {
+                const saldo = await ApiService.buscarSaldo(CONTA_ID);
+                console.log('Saldo carregado do backend:', saldo);
+                
+                saldoAtual = typeof saldo === 'number' ? saldo : parseFloat(saldo);
+                
+                // Atualiza também no localStorage
+                usuario.saldo = saldoAtual;
+                localStorage.setItem('usuario', JSON.stringify(usuario));
+                
+                atualizarSaldoTela();
+            } catch (error) {
+                console.error('Erro ao carregar saldo:', error);
+                // Usa saldo do localStorage se API falhar
+                saldoAtual = usuario.saldo || 0;
+                atualizarSaldoTela();
+            }
+        }
+
+        // Atualiza o saldo na tela
+        function atualizarSaldoTela() {
+            const balanceElement = document.getElementById('balance');
+            if (saldoVisivel) {
+                balanceElement.textContent = `R$ ${saldoAtual.toFixed(2).replace('.', ',')}`;
+            }
+        }
+
+        // Carrega transações reais do backend
+        async function carregarTransacoes() {
+            const container = document.getElementById('transactions-list');
+            container.innerHTML = '<p style="text-align: center; color: #7f8c8d; padding: 20px;">Carregando transações...</p>';
+
+            try {
+                const transacoes = await ApiService.buscarTransacoes(CONTA_ID, 5);
+                console.log('Transações carregadas:', transacoes);
+                
+                if (!transacoes || transacoes.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #7f8c8d; padding: 20px;">Nenhuma transação encontrada</p>';
+                    return;
+                }
+
+                container.innerHTML = '';
+
+                transacoes.forEach(trans => {
+                    // Determina se é entrada ou saída
+                    const isCredito = trans.contaDestinoId === CONTA_ID;
+                    const iconClass = isCredito ? 'icon-income' : 'icon-expense';
+                    const iconEmoji = isCredito ? '💰' : '�';
+                    const amountClass = isCredito ? 'amount-positive' : 'amount-negative';
+                    const signal = isCredito ? '+' : '-';
+
+                    // Formatar data
+                    const data = new Date(trans.dataHora);
+                    const dataFormatada = data.toLocaleDateString('pt-BR', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+
+                    // Título da transação - usa nome se disponível, senão usa ID
+                    let titulo;
+                    if (isCredito) {
+                        // Recebimento
+                        titulo = trans.contaOrigemNome 
+                            ? `Recebimento de ${trans.contaOrigemNome}`
+                            : `Recebimento - Conta ${trans.contaOrigemId}`;
+                    } else {
+                        // Transferência
+                        titulo = trans.contaDestinoNome 
+                            ? `Transferência para ${trans.contaDestinoNome}`
+                            : `Transferência - Conta ${trans.contaDestinoId}`;
+                    }
+
+                    const div = document.createElement('div');
+                    div.className = 'transaction-item';
+                    div.innerHTML = `
+                        <div class="transaction-icon ${iconClass}">${iconEmoji}</div>
+                        <div class="transaction-details">
+                            <div class="transaction-title">${titulo}</div>
+                            <div class="transaction-date">${dataFormatada}</div>
+                        </div>
+                        <div class="transaction-amount ${amountClass}">
+                            ${signal} R$ ${trans.valor.toFixed(2).replace('.', ',')}
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+
+            } catch (error) {
+                console.error('Erro ao carregar transações:', error);
+                container.innerHTML = '<p style="text-align: center; color: #e74c3c; padding: 20px;">Erro ao carregar transações</p>';
+            }
+        }
+
+        // Toggle do saldo
+        function toggleBalance() {
+            const balanceElement = document.getElementById('balance');
+            if (saldoVisivel) {
+                balanceElement.textContent = '••••••';
+            } else {
+                balanceElement.textContent = `R$ ${saldoAtual.toFixed(2).replace('.', ',')}`;
+            }
+            saldoVisivel = !saldoVisivel;
+        }
+
+        // Logout
+        function logout() {
+            if (confirm('Deseja realmente sair?')) {
+                localStorage.removeItem('usuario');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Inicializa o dashboard
+        async function inicializar() {
+            // Mostra saldo inicial do localStorage
+            atualizarSaldoTela();
+            
+            // Carrega dados do backend
+            await carregarSaldo();
+            await carregarTransacoes();
+            
+            // Atualiza automaticamente a cada 30 segundos
+            setInterval(async () => {
+                await carregarSaldo();
+                await carregarTransacoes();
+            }, 30000);
+        }
+
+        // Carrega dados ao abrir a página
+        inicializar();
+    </script>
+</body>
+</html>

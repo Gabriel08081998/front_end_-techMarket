@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechMarket Bank - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2em;
+            color: white;
+            font-weight: bold;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.8em;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .link {
+            margin-top: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.9em;
+            display: inline-block;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        .divider {
+            margin: 25px 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 100%;
+            height: 1px;
+            background: #e0e0e0;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 15px;
+            color: #7f8c8d;
+            font-size: 0.85em;
+            position: relative;
+            z-index: 1;
+        }
+
+        .quick-access {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .quick-btn {
+            flex: 1;
+            padding: 10px;
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.85em;
+            color: #2c3e50;
+        }
+
+        .quick-btn:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+        }
+
+        @media (max-width: 600px) {
+            .login-container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">TB</div>
+        <h1>TechMarket Bank</h1>
+        <p class="subtitle">Acesse sua conta</p>
+
+        <div id="mensagem-erro" style="display: none; background: #ffe6e6; color: #e74c3c; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.9em; text-align: center;"></div>
+        <div id="mensagem-sucesso" style="display: none; background: #e6f9f0; color: #2ecc71; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.9em; text-align: center;"></div>
+
+        <form id="login-form">
+            <div class="form-group">
+                <label for="cpf-login">CPF</label>
+                <input type="text" id="cpf-login" placeholder="000.000.000-00" maxlength="14" required>
+            </div>
+
+            <div class="form-group">
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" placeholder="Digite sua senha" required>
+            </div>
+
+            <button type="submit" class="btn" id="btn-login">Entrar</button>
+        </form>
+
+        <div class="divider">
+            <span>ou</span>
+        </div>
+
+        <div style="background: #f8f9fa; border-radius: 10px; padding: 15px; margin: 15px 0; font-size: 0.85em;">
+            <p style="font-weight: 600; color: #2c3e50; margin-bottom: 10px;">🔐 Contas de Teste:</p>
+            <div style="color: #7f8c8d; line-height: 1.6;">
+                <strong>João Silva</strong><br>
+                CPF: 123.456.789-01 | Senha: senha123<br><br>
+                <strong>Maria Santos</strong><br>
+                CPF: 234.567.890-12 | Senha: senha456<br><br>
+                <strong>Pedro Costa</strong><br>
+                CPF: 345.678.901-23 | Senha: senha789
+            </div>
+        </div>
+
+        <div class="quick-access">
+            <button class="quick-btn" onclick="acessoRapido('12345678901', 'senha123')">🔐 João Silva</button>
+            <button class="quick-btn" onclick="window.location.href='cadastro.html'">✨ Criar Conta</button>
+        </div>
+
+        <a href="cadastro.html" class="link">Não tem uma conta? Cadastre-se gratuitamente</a>
+    </div>
+
+    <script src="api-service.js"></script>
+    <script>
+        const mensagemErro = document.getElementById('mensagem-erro');
+        const mensagemSucesso = document.getElementById('mensagem-sucesso');
+        const btnLogin = document.getElementById('btn-login');
+
+        function mostrarMensagem(tipo, texto) {
+            if (tipo === 'erro') {
+                mensagemErro.textContent = texto;
+                mensagemErro.style.display = 'block';
+                mensagemSucesso.style.display = 'none';
+            } else {
+                mensagemSucesso.textContent = texto;
+                mensagemSucesso.style.display = 'block';
+                mensagemErro.style.display = 'none';
+            }
+        }
+
+        function ocultarMensagens() {
+            mensagemErro.style.display = 'none';
+            mensagemSucesso.style.display = 'none';
+        }
+        // Máscara de CPF
+        document.getElementById('cpf-login').addEventListener('input', function(e) {
+            let valor = e.target.value.replace(/\D/g, '');
+            if (valor.length <= 11) {
+                valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
+                valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
+                valor = valor.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                e.target.value = valor;
+            }
+        });
+
+        // Login com backend real
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const cpf = document.getElementById('cpf-login').value;
+            const senha = document.getElementById('senha').value;
+
+            // Validações básicas
+            if (!cpf || !senha) {
+                mostrarMensagem('erro', 'Por favor, preencha todos os campos');
+                return;
+            }
+
+            const cpfLimpo = cpf.replace(/\D/g, '');
+            if (cpfLimpo.length !== 11) {
+                mostrarMensagem('erro', 'CPF deve conter 11 dígitos');
+                return;
+            }
+
+            // Mostra loading
+            btnLogin.disabled = true;
+            btnLogin.textContent = 'Entrando...';
+            ocultarMensagens();
+
+            try {
+                // Chama API de login
+                const resultado = await ApiService.login(cpf, senha);
+
+                if (resultado.success) {
+                    // Salva dados do usuário no localStorage
+                    localStorage.setItem('usuario', JSON.stringify({
+                        id: resultado.conta.id,
+                        nome: resultado.conta.nome,
+                        cpf: resultado.conta.cpf,
+                        saldo: resultado.conta.saldo,
+                        logado: true
+                    }));
+
+                    mostrarMensagem('sucesso', resultado.mensagem || 'Login realizado com sucesso!');
+
+                    // Aguarda 1 segundo e redireciona
+                    setTimeout(() => {
+                        window.location.href = 'loading.html';
+                    }, 1000);
+                } else {
+                    mostrarMensagem('erro', resultado.mensagem || 'Erro ao realizar login');
+                    btnLogin.disabled = false;
+                    btnLogin.textContent = 'Entrar';
+                }
+            } catch (error) {
+                console.error('Erro no login:', error);
+                mostrarMensagem('erro', 'Erro ao conectar com o servidor. Verifique se o backend está rodando.');
+                btnLogin.disabled = false;
+                btnLogin.textContent = 'Entrar';
+            }
+        });
+
+        // Acesso rápido para testes
+        async function acessoRapido(cpf, senha) {
+            document.getElementById('cpf-login').value = cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+            document.getElementById('senha').value = senha;
+            
+            // Dispara o submit do formulário
+            document.getElementById('login-form').dispatchEvent(new Event('submit'));
+        }
+    </script>
+</body>
+</html>

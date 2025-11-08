@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transferência - TechMarket Bank</title>
+    <script src="api-service.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            padding-bottom: 80px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s;
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        h1 {
+            color: white;
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+
+        .container {
+            padding: 20px 15px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .saldo-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .saldo-label {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+
+        .saldo-valor {
+            color: #2c3e50;
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input.error {
+            border-color: #e74c3c;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.85em;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .btn-transferir {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-transferir:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-transferir:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+
+        .modal-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .modal-message {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .modal-code {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.9em;
+            color: #667eea;
+            margin-bottom: 20px;
+            word-break: break-all;
+        }
+
+        .btn-modal {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-error {
+            background: #ffe6e6;
+            color: #c0392b;
+            border: 1px solid #e74c3c;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            color: #7f8c8d;
+            transition: all 0.3s;
+            padding: 5px 15px;
+            border: none;
+            background: none;
+        }
+
+        .nav-item.active {
+            color: #667eea;
+        }
+
+        .nav-icon {
+            font-size: 1.5em;
+        }
+
+        .nav-label {
+            font-size: 0.7em;
+            font-weight: 500;
+        }
+
+        @media (min-width: 768px) {
+            body {
+                max-width: 600px;
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <button class="btn-back" onclick="window.location.href='dashboard.html'">←</button>
+        <h1>Transferir</h1>
+    </div>
+
+    <!-- Container -->
+    <div class="container">
+        <!-- Saldo Disponível -->
+        <div class="saldo-card">
+            <div class="saldo-label">Saldo disponível</div>
+            <div class="saldo-valor" id="saldo">R$ 0,00</div>
+        </div>
+
+        <!-- Alerta de Erro -->
+        <div class="alert alert-error" id="alert-error"></div>
+
+        <!-- Formulário de Transferência -->
+        <div class="form-card">
+            <form id="form-transferencia">
+                <div class="form-group">
+                    <label for="conta-destino">Conta de Destino *</label>
+                    <input 
+                        type="number" 
+                        id="conta-destino" 
+                        name="conta-destino"
+                        placeholder="Digite o ID da conta"
+                        required
+                    >
+                    <span class="error-message" id="error-conta">Informe a conta de destino</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="valor">Valor (R$) *</label>
+                    <input 
+                        type="number" 
+                        id="valor" 
+                        name="valor"
+                        step="0.01"
+                        min="0.01"
+                        placeholder="0,00"
+                        required
+                    >
+                    <span class="error-message" id="error-valor">Informe um valor válido</span>
+                </div>
+
+                <button type="submit" class="btn-transferir" id="btn-submit">
+                    Transferir
+                </button>
+            </form>
+        </div>
+
+        <!-- Contas Disponíveis -->
+        <div class="form-card" style="margin-top: 20px;">
+            <h3 style="color: #2c3e50; margin-bottom: 15px; font-size: 1.1em;">💡 Contas para Teste</h3>
+            <p style="color: #7f8c8d; font-size: 0.9em; margin-bottom: 10px;">Use estes IDs para testar transferências:</p>
+            <ul style="color: #7f8c8d; font-size: 0.9em; padding-left: 20px;">
+                <li>Conta ID: 2</li>
+                <li>Conta ID: 3</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Modal de Sucesso -->
+    <div class="modal" id="modal-sucesso">
+        <div class="modal-content">
+            <div class="modal-icon">✅</div>
+            <h2 class="modal-title">Transferência Realizada!</h2>
+            <p class="modal-message">Sua transferência foi processada com sucesso.</p>
+            <div class="modal-code" id="modal-code"></div>
+            <button class="btn-modal" onclick="fecharModal()">OK</button>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <button class="nav-item" onclick="window.location.href='dashboard.html'">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-label">Início</div>
+        </button>
+        <button class="nav-item" onclick="window.location.href='extrato.html'">
+            <div class="nav-icon">📊</div>
+            <div class="nav-label">Extrato</div>
+        </button>
+        <button class="nav-item" onclick="alert('Notificações em desenvolvimento')">
+            <div class="nav-icon">🔔</div>
+            <div class="nav-label">Avisos</div>
+        </button>
+        <button class="nav-item" onclick="alert('Perfil em desenvolvimento')">
+            <div class="nav-icon">👤</div>
+            <div class="nav-label">Perfil</div>
+        </button>
+    </div>
+
+    <script>
+        // Dados do usuário logado
+        const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+        
+        // Verifica se está logado
+        if (!usuario.logado || !usuario.id) {
+            alert('Você precisa fazer login primeiro');
+            window.location.href = 'login.html';
+        }
+
+        const CONTA_ORIGEM_ID = usuario.id;
+        let saldoAtual = usuario.saldo || 0;
+        let contasDisponiveis = [];
+
+        // Carrega o saldo ao iniciar
+        async function carregarSaldo() {
+            try {
+                const saldo = await ApiService.buscarSaldo(CONTA_ORIGEM_ID);
+                console.log('Saldo carregado do backend:', saldo);
+                
+                saldoAtual = typeof saldo === 'number' ? saldo : parseFloat(saldo);
+                
+                // Atualiza também no localStorage
+                usuario.saldo = saldoAtual;
+                localStorage.setItem('usuario', JSON.stringify(usuario));
+                
+                document.getElementById('saldo').textContent = 
+                    `R$ ${saldoAtual.toFixed(2).replace('.', ',')}`;
+            } catch (error) {
+                console.error('Erro ao carregar saldo:', error);
+                // Usa saldo do localStorage se API falhar
+                document.getElementById('saldo').textContent = 
+                    `R$ ${saldoAtual.toFixed(2).replace('.', ',')}`;
+            }
+        }
+
+        // Carrega lista de contas disponíveis
+        async function carregarContasDisponiveis() {
+            try {
+                const contas = await ApiService.listarContas();
+                contasDisponiveis = contas.filter(c => c.id !== CONTA_ORIGEM_ID);
+                console.log('Contas disponíveis:', contasDisponiveis);
+                
+                if (contasDisponiveis.length > 0) {
+                    atualizarListaContas();
+                }
+            } catch (error) {
+                console.error('Erro ao carregar contas:', error);
+            }
+        }
+
+        // Atualiza a lista de contas na tela
+        function atualizarListaContas() {
+            const container = document.querySelector('.form-card:last-child ul');
+            if (!container || contasDisponiveis.length === 0) return;
+            
+            container.innerHTML = contasDisponiveis
+                .map(c => `<li>Conta ID: ${c.id} - ${c.nome} (CPF: ${c.cpf})</li>`)
+                .join('');
+        }
+
+        // Submissão do formulário
+        document.getElementById('form-transferencia').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Limpa mensagens anteriores
+            document.getElementById('alert-error').classList.remove('show');
+            document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+
+            // Pega os valores
+            const contaDestino = parseInt(document.getElementById('conta-destino').value);
+            const valor = parseFloat(document.getElementById('valor').value);
+
+            // Validações básicas
+            if (!contaDestino || contaDestino <= 0) {
+                document.getElementById('error-conta').classList.add('show');
+                document.getElementById('conta-destino').classList.add('error');
+                return;
+            }
+
+            if (!valor || valor <= 0) {
+                document.getElementById('error-valor').classList.add('show');
+                document.getElementById('valor').classList.add('error');
+                return;
+            }
+
+            console.log('Validando transferência:');
+            console.log('- Saldo atual:', saldoAtual);
+            console.log('- Valor a transferir:', valor);
+            console.log('- Saldo suficiente?', valor <= saldoAtual);
+
+            if (valor > saldoAtual) {
+                mostrarErro(`Saldo insuficiente. Saldo atual: R$ ${saldoAtual.toFixed(2)}`);
+                return;
+            }
+
+            // Desabilita botão e mostra loading
+            const btnSubmit = document.getElementById('btn-submit');
+            btnSubmit.disabled = true;
+            btnSubmit.textContent = 'Processando...';
+
+            try {
+                // Realiza a transferência
+                const resultado = await ApiService.realizarTransferencia(
+                    CONTA_ORIGEM_ID,
+                    contaDestino,
+                    valor
+                );
+
+                // Mostra modal de sucesso
+                document.getElementById('modal-code').textContent = 
+                    `Código: ${resultado.codigoUnico}\nValor: R$ ${resultado.valor.toFixed(2)}\nData: ${new Date(resultado.dataHora).toLocaleString('pt-BR')}`;
+                document.getElementById('modal-sucesso').classList.add('show');
+
+                // Limpa o formulário
+                this.reset();
+
+                // Atualiza o saldo
+                await carregarSaldo();
+
+            } catch (error) {
+                mostrarErro(error.message || 'Erro ao realizar transferência. Tente novamente.');
+            } finally {
+                // Reabilita o botão
+                btnSubmit.disabled = false;
+                btnSubmit.textContent = 'Transferir';
+            }
+        });
+
+        // Remove classe de erro ao digitar
+        document.getElementById('conta-destino').addEventListener('input', function() {
+            this.classList.remove('error');
+            document.getElementById('error-conta').classList.remove('show');
+        });
+
+        document.getElementById('valor').addEventListener('input', function() {
+            this.classList.remove('error');
+            document.getElementById('error-valor').classList.remove('show');
+        });
+
+        // Mostra mensagem de erro
+        function mostrarErro(mensagem) {
+            const alert = document.getElementById('alert-error');
+            alert.textContent = mensagem;
+            alert.classList.add('show');
+            
+            // Scroll para o topo
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Remove após 5 segundos
+            setTimeout(() => {
+                alert.classList.remove('show');
+            }, 5000);
+        }
+
+        // Fecha o modal
+        function fecharModal() {
+            document.getElementById('modal-sucesso').classList.remove('show');
+        }
+
+        // Inicializa
+        async function inicializar() {
+            // Mostra saldo inicial do localStorage
+            document.getElementById('saldo').textContent = 
+                `R$ ${saldoAtual.toFixed(2).replace('.', ',')}`;
+            
+            // Carrega dados do backend
+            await carregarSaldo();
+            await carregarContasDisponiveis();
+        }
+        
+        inicializar();
+    </script>
+</body>
+</html>

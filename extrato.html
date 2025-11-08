@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extrato - TechMarket Bank</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            padding-bottom: 80px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s;
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        h1 {
+            color: white;
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+
+        .filter-section {
+            padding: 15px;
+            background: white;
+            margin-bottom: 10px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 20px;
+            font-size: 0.85em;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+            color: #2c3e50;
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .transactions-container {
+            padding: 0 15px;
+        }
+        
+        .transacao { 
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px; 
+            margin-bottom: 8px; 
+            background: white; 
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+
+        .transacao:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+        
+        .valor-alto { 
+            border-left: 4px solid #e74c3c;
+            font-weight: bold;
+        }
+
+        .transaction-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3em;
+            flex-shrink: 0;
+        }
+
+        .icon-expense {
+            background: #ffe6e6;
+        }
+
+        .icon-income {
+            background: #e6f9f0;
+        }
+        
+        .data { 
+            color: #7f8c8d; 
+            font-size: 0.8em;
+            margin-top: 3px;
+        }
+        
+        .descricao { 
+            flex-grow: 1;
+        }
+
+        .transaction-title {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.95em;
+            margin-bottom: 3px;
+        }
+        
+        .valor {
+            font-weight: 700;
+            font-size: 1em;
+            flex-shrink: 0;
+        }
+
+        .valor.debito { 
+            color: #e74c3c; 
+        }
+        
+        .valor.credito { 
+            color: #2ecc71; 
+        }
+
+        .month-divider {
+            font-weight: 600;
+            color: #2c3e50;
+            padding: 15px 15px 10px;
+            font-size: 0.9em;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        .summary-value {
+            font-weight: 600;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            color: #7f8c8d;
+            transition: all 0.3s;
+            padding: 5px 15px;
+            border: none;
+            background: none;
+        }
+
+        .nav-item.active {
+            color: #667eea;
+        }
+
+        .nav-icon {
+            font-size: 1.5em;
+        }
+
+        .nav-label {
+            font-size: 0.7em;
+            font-weight: 500;
+        }
+
+        @media (min-width: 768px) {
+            body {
+                max-width: 600px;
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <button class="btn-back" onclick="window.location.href='dashboard.html'">←</button>
+        <h1>Extrato Completo</h1>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-section">
+        <div class="filter-buttons">
+            <button class="filter-btn active" onclick="filtrarTransacoes('todos')">Todos</button>
+            <button class="filter-btn" onclick="filtrarTransacoes('receitas')">Receitas</button>
+            <button class="filter-btn" onclick="filtrarTransacoes('despesas')">Despesas</button>
+            <button class="filter-btn" onclick="filtrarTransacoes('pix')">Pix</button>
+        </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="summary-card">
+        <div class="summary-item">
+            <span class="summary-label">💰 Total de Receitas</span>
+            <span class="summary-value" style="color: #2ecc71;">+ R$ <span id="total-receitas">7.500,00</span></span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">💸 Total de Despesas</span>
+            <span class="summary-value" style="color: #e74c3c;">- R$ <span id="total-despesas">1.670,50</span></span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">📊 Saldo do Período</span>
+            <span class="summary-value" style="color: #667eea;">R$ <span id="saldo-periodo">5.829,50</span></span>
+        </div>
+    </div>
+
+    <!-- Transactions List -->
+    <div class="transactions-container">
+        <div class="month-divider">Outubro 2023</div>
+        <div id="lista-transacoes"></div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <button class="nav-item" onclick="window.location.href='dashboard.html'">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-label">Início</div>
+        </button>
+        <button class="nav-item active">
+            <div class="nav-icon">📊</div>
+            <div class="nav-label">Extrato</div>
+        </button>
+        <button class="nav-item" onclick="alert('Notificações em desenvolvimento')">
+            <div class="nav-icon">🔔</div>
+            <div class="nav-label">Avisos</div>
+        </button>
+        <button class="nav-item" onclick="alert('Perfil em desenvolvimento')">
+            <div class="nav-icon">👤</div>
+            <div class="nav-label">Perfil</div>
+        </button>
+    </div>
+
+    <script>
+        // Simulação de dados do extrato (na prática, viria de uma API)
+        const transacoes = [
+            { id: 1, data: "2023-10-27", descricao: "Compra Online - Loja A", valor: -150.00, tipo: "pix" },
+            { id: 2, data: "2023-10-26", descricao: "Depósito", valor: 2000.00, tipo: "deposito" },
+            { id: 3, data: "2023-10-25", descricao: "Compra Supermercado", valor: -320.50, tipo: "debito" },
+            { id: 4, data: "2023-10-24", descricao: "Transferência Recebida", valor: 5500.00, tipo: "transferencia" },
+            { id: 5, data: "2023-10-23", descricao: "Pagamento Fatura", valor: -1200.00, tipo: "pagamento" },
+            { id: 6, data: "2023-10-22", descricao: "Pix Recebido - Maria Silva", valor: 250.00, tipo: "pix" },
+            { id: 7, data: "2023-10-21", descricao: "Netflix", valor: -49.90, tipo: "debito" },
+            { id: 8, data: "2023-10-20", descricao: "Spotify", valor: -21.90, tipo: "debito" }
+        ];
+
+        let filtroAtual = 'todos';
+
+        function formatarData(dataStr) {
+            const data = new Date(dataStr + 'T00:00:00');
+            const hoje = new Date();
+            const ontem = new Date(hoje);
+            ontem.setDate(ontem.getDate() - 1);
+
+            if (data.toDateString() === hoje.toDateString()) {
+                return 'Hoje';
+            } else if (data.toDateString() === ontem.toDateString()) {
+                return 'Ontem';
+            } else {
+                return data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+            }
+        }
+
+        function carregarExtrato() {
+            const container = document.getElementById('lista-transacoes');
+            container.innerHTML = '';
+
+            let transacoesFiltradas = transacoes;
+
+            // Aplica filtro
+            if (filtroAtual === 'receitas') {
+                transacoesFiltradas = transacoes.filter(t => t.valor > 0);
+            } else if (filtroAtual === 'despesas') {
+                transacoesFiltradas = transacoes.filter(t => t.valor < 0);
+            } else if (filtroAtual === 'pix') {
+                transacoesFiltradas = transacoes.filter(t => t.tipo === 'pix');
+            }
+
+            transacoesFiltradas.forEach(trans => {
+                const divTransacao = document.createElement('div');
+                divTransacao.className = 'transacao';
+
+                // Adiciona a classe 'valor-alto' se o valor absoluto for maior que 5000
+                if (Math.abs(trans.valor) > 5000) {
+                    divTransacao.classList.add('valor-alto');
+                }
+
+                const tipoClasse = trans.valor < 0 ? 'debito' : 'credito';
+                const iconClass = trans.valor < 0 ? 'icon-expense' : 'icon-income';
+                const iconEmoji = trans.valor < 0 ? '🛍️' : '💰';
+                const signal = trans.valor < 0 ? '-' : '+';
+
+                divTransacao.innerHTML = `
+                    <div class="transaction-icon ${iconClass}">${iconEmoji}</div>
+                    <div class="descricao">
+                        <div class="transaction-title">${trans.descricao}</div>
+                        <div class="data">${formatarData(trans.data)}</div>
+                    </div>
+                    <span class="valor ${tipoClasse}">${signal} R$ ${Math.abs(trans.valor).toFixed(2)}</span>
+                `;
+                container.appendChild(divTransacao);
+            });
+
+            // Atualiza resumo
+            atualizarResumo();
+        }
+
+        function atualizarResumo() {
+            const receitas = transacoes.filter(t => t.valor > 0).reduce((sum, t) => sum + t.valor, 0);
+            const despesas = Math.abs(transacoes.filter(t => t.valor < 0).reduce((sum, t) => sum + t.valor, 0));
+            const saldo = receitas - despesas;
+
+            document.getElementById('total-receitas').textContent = receitas.toFixed(2);
+            document.getElementById('total-despesas').textContent = despesas.toFixed(2);
+            document.getElementById('saldo-periodo').textContent = saldo.toFixed(2);
+        }
+
+        function filtrarTransacoes(filtro) {
+            filtroAtual = filtro;
+            
+            // Atualiza botões ativos
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            carregarExtrato();
+        }
+
+        // Carrega o extrato quando a página abre
+        document.addEventListener('DOMContentLoaded', carregarExtrato);
+    </script>
+</body>
+</html>
