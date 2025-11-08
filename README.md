@@ -230,22 +230,49 @@ Formulário completo para criar nova conta no banco.
 - **JavaScript (Vanilla)**: DOM manipulation, validações, localStorage, máscaras
 - **LocalStorage**: Gerenciamento de sessão do usuário
 
-## 🚀 Como Usar
+## 🚀 Como Rodar o Projeto
 
-### Opção 1: Acesso Rápido (Demonstração)
-1. Abra `login.html`
+### ⚠️ IMPORTANTE: Use Servidor Local para Integração com Backend
+
+Para evitar erros de CORS ao usar a API, **sempre use um servidor local**:
+
+```powershell
+# Execute no PowerShell:
+python -m http.server 3000
+```
+
+Depois abra no navegador: **`http://localhost:3000`**
+
+### Método Alternativo (Apenas Demonstração - Sem Backend)
+```powershell
+# Para testar apenas o frontend sem backend:
+start index.html
+```
+⚠️ **Atenção:** Este método não funciona com a API (erro de CORS)
+
+### Outras Opções de Servidor Local
+```powershell
+# Com Node.js:
+npx http-server -p 3000
+# Depois abra: http://localhost:3000
+```
+
+### Usando o Frontend
+
+#### Opção 1: Acesso Rápido (Demonstração)
+1. Abra `index.html` ou `login.html`
 2. Clique em "🔐 Acesso Rápido"
 3. Será redirecionado para a tela de loading
 4. Após 3 segundos, chegará ao dashboard
 
-### Opção 2: Login Manual
+#### Opção 2: Login Manual
 1. Abra `login.html`
 2. Digite qualquer CPF (ex: 123.456.789-00)
 3. Digite qualquer senha
 4. Clique em "Entrar"
 5. Tela de loading → Dashboard
 
-### Opção 3: Criar Nova Conta
+#### Opção 3: Criar Nova Conta
 1. Na tela de login, clique em "✨ Abrir Conta"
 2. Preencha o formulário com dados válidos:
    - **CPF**: 11 dígitos numéricos
